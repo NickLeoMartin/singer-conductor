@@ -13,7 +13,9 @@ setuptools.setup(
     ],
     install_requires=[],
     extras_require={
-        'smart': ['smart-open==2.0.0']
+        'smart-aws': ['smart-open[aws]==2.0.0'],
+        'smart-gcp': ['smart-open[gcp]==2.0.0'],
+        'smart-all': ['smart-open[all]==2.0.0']
     },
     entry_points="""
           [console_scripts]
