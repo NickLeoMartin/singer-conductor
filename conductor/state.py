@@ -38,15 +38,16 @@ class SmartStorage(BaseStorage):
         super(SmartStorage, self).__init__(*args, **kwargs)
 
     def load(self):
+        self.file_contents = {}
         try:
             with open(self.filepath, 'r') as file:
                 self.file_contents = json.load(file)
         except FileNotFoundError:
-            self.file_contents = {}
+            LOGGER.info(f'File does not exist: {self.filepath}')
         return self.file_contents
 
     def dump(self, file_contents, filepath=None):
-        filepath = self.filepath if filepath is not None else filepath
+        filepath = self.filepath if filepath is None else filepath
 
         with open(filepath, 'w') as file:
             json.dump(file_contents, file)
