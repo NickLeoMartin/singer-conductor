@@ -41,7 +41,7 @@ class SmartStorage(BaseStorage):
         try:
             with open(self.filepath, 'r') as file:
                 self.file_contents = json.load(file)
-        except ValueError:
+        except FileNotFoundError:
             self.file_contents = None
         return self.file_contents
 
