@@ -208,6 +208,7 @@ class SingerConductor(BaseConductor):
         """Runs discovery mode"""
         LOGGER.info('Discovering...')
 
+        LOGGER.info(f'Executing: {self.tap_discovery_command}')
         _, _, stderr = utils.run_command(
             command=self.tap_discovery_command)
 
@@ -217,6 +218,7 @@ class SingerConductor(BaseConductor):
         """Runs selection mode"""
         LOGGER.info('Selecting...')
 
+        LOGGER.info(f'Executing: {self.tap_selector_command}')
         _, _, stderr = utils.run_command(
             command=self.tap_selector_command)
 
@@ -234,6 +236,7 @@ class SingerConductor(BaseConductor):
                                filepath=self.local_state_filepath)
 
         # Execute replication
+        LOGGER.info(f'Executing: {self.replication_command}')
         _, stdout, stderr = utils.run_command(
             command=self.replication_command)
 
