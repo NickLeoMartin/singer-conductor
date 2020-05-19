@@ -14,7 +14,7 @@ except ImportError:
 
 class BaseStorage(object):
 
-    def __init__(self, file_contents=None):
+    def __init__(self, file_contents={}):
         if not file_contents:
             self.file_contents = file_contents
 
@@ -42,12 +42,14 @@ class SmartStorage(BaseStorage):
             with open(self.filepath, 'r') as file:
                 self.file_contents = json.load(file)
         except FileNotFoundError:
-            self.file_contents = None
+            self.file_contents = {}
         return self.file_contents
 
     def dump(self, file_contents, filepath=None):
         filepath = self.filepath if filepath is not None else filepath
+
         with open(filepath, 'w') as file:
             json.dump(file_contents, file)
         self.file_contents = file_contents
+
         LOGGER.info(f'Dumped {self.filepath} to {filepath}')
