@@ -161,10 +161,16 @@ class SingerConductor(BaseConductor):
     @property
     def tap_replication_command(self):
         """Piecewise command for data extraction"""
+
+        catalog = self.tap_catalog_filepath
+
+        if self.selector_catalog_filepath:
+            catalog = self.selector_catalog_filepath
+
         return ' '.join([
             f'{self.tap_bin}',
             f'--config {self.tap_config_filepath}',
-            f'--properties {self.selector_catalog_filepath}'
+            f'--catalog {catalog}'
         ])
 
     @property

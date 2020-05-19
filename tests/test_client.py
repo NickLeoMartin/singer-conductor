@@ -109,7 +109,7 @@ class TestSingerConductor(unittest.TestCase):
     def test_tap_replication_command(self):
         expected_command = (
             '~/.virtualenvs/venv_tap/bin/tap-postgres '
-            '--config tap/config.json --properties edited_catalog.json')
+            '--config tap/config.json --catalog edited_catalog.json')
 
         self.assertEqual(
             self.conductor.tap_replication_command,
@@ -127,7 +127,7 @@ class TestSingerConductor(unittest.TestCase):
     def test_replication_command(self):
         expected_command = (
             '  ~/.virtualenvs/venv_tap/bin/tap-postgres '
-            '--config tap/config.json --properties edited_catalog.json '
+            '--config tap/config.json --catalog edited_catalog.json '
             '| ~/.virtualenvs/venv_transformer/bin/transform-field '
             '--config transformer/config.json '
             '| ~/.virtualenvs/venv_target/bin/target-bigquery '
