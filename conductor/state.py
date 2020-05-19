@@ -1,10 +1,15 @@
 import json
 import logging
 
-from smart_open import smart_open
-
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
+
+try:
+    from smart_open import open
+    LOGGER.info('Using the "smart-open" package')
+except ImportError:
+    LOGGER.info('Using built-in open function')
+    pass
 
 
 class BaseStorage(object):
@@ -34,7 +39,7 @@ class SmartStorage(BaseStorage):
 
     def load(self):
         try:
-            with smart_open(self.filepath, 'r') as file:
+            with open(self.filepath, 'r') as file:
                 self.file_contents = json.load(file)
         except ValueError:
             self.file_contents = None
@@ -42,7 +47,7 @@ class SmartStorage(BaseStorage):
 
     def dump(self, file_contents, filepath=None):
         filepath = self.filepath if filepath is not None else filepath
-        with smart_open(filepath, 'w') as file:
+        with open(filepath, 'w') as file:
             json.dump(file_contents, file)
         self.file_contents = file_contents
         LOGGER.info(f'Dumped {self.filepath} to {filepath}')

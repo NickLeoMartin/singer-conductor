@@ -5,8 +5,6 @@ import os
 import json
 import logging
 
-from smart_open import smart_open
-
 from conductor import utils
 from conductor import state
 

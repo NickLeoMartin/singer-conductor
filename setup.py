@@ -11,9 +11,10 @@ setuptools.setup(
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3 :: Only'
     ],
-    install_requires=[
-        "smart-open==2.0.0"
-    ],
+    install_requires=[],
+    extras_require={
+        'smart': ['smart-open==2.0.0']
+    },
     entry_points="""
           [console_scripts]
           conductor=conductor:main
