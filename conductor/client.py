@@ -28,7 +28,8 @@ class BaseConductor(object):
                  transformer_bin=None,
                  transformer_config_filepath=None,
                  state_persistence_filepath=None,
-                 local_state_filepath='latest_state.json'):
+                 local_previous_state_filepath='previous_state.json',
+                 local_latest_state_filepath='latest_state.json'):
         self.tap_bin = tap_bin
         self.tap_config_filepath = tap_config_filepath
         self.tap_catalog_filepath = tap_catalog_filepath
@@ -40,7 +41,8 @@ class BaseConductor(object):
         self.target_bin = target_bin
         self.target_config_filepath = target_config_filepath
         self.state_persistence_filepath = state_persistence_filepath
-        self.local_state_filepath = local_state_filepath
+        self.local_previous_state_filepath = local_previous_state_filepath
+        self.local_latest_state_filepath = local_latest_state_filepath
 
     @classmethod
     def load(cls, filepath):
@@ -161,17 +163,24 @@ class SingerConductor(BaseConductor):
     @property
     def tap_replication_command(self):
         """Piecewise command for data extraction"""
-
         catalog = self.tap_catalog_filepath
 
         if self.selector_catalog_filepath:
             catalog = self.selector_catalog_filepath
 
-        return ' '.join([
+        # Required
+        commands = [
             f'{self.tap_bin}',
             f'--config {self.tap_config_filepath}',
             f'--catalog {catalog}'
-        ])
+        ]
+
+        # Optional
+        if self.state_persistence_filepath:
+            state_arg = f'--state {self.local_previous_state_filepath}'
+            commands.append(state_arg)
+
+        return ' '.join(commands)
 
     @property
     def transformer_replication_command(self):
@@ -194,18 +203,22 @@ class SingerConductor(BaseConductor):
         """Full command for end-to-end replication"""
         commands = []
 
+        # Required
         tap_command = f'  {self.tap_replication_command}'
         commands.append(tap_command)
 
+        # Optional
         if self.transformer_bin:
             transformer_command = f'| {self.transformer_replication_command}'
             commands.append(transformer_command)
 
+        # Required
         target_command = f'| {self.target_replication_command}'
         commands.append(target_command)
 
+        # Optional
         if self.state_persistence_filepath:
-            state_command = f'> {self.local_state_filepath}'
+            state_command = f'> {self.local_latest_state_filepath}'
             commands.append(state_command)
 
         return ' '.join(commands)
@@ -239,16 +252,17 @@ class SingerConductor(BaseConductor):
             state_storage = state.SmartStorage(self.state_persistence_filepath)
             previous_state = state_storage.load()
             state_storage.dump(file_contents=previous_state,
-                               filepath=self.local_state_filepath)
+                               filepath=self.local_previous_state_filepath)
 
         # Execute replication
         LOGGER.info(f'Executing: {self.replication_command}')
-        _, stdout, stderr = utils.run_command(
+        _, _, stderr = utils.run_command(
             command=self.replication_command)
 
         # Persist local or external state file
         if self.state_persistence_filepath:
-            state_storage = state.SmartStorage(self.local_state_filepath)
+            state_storage = state.SmartStorage(
+                self.local_latest_state_filepath)
             latest_state = state_storage.load()
             LOGGER.info(f'Latest state: {latest_state}')
             state_storage.update(file_contents=latest_state,
