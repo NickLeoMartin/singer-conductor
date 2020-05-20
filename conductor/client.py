@@ -251,6 +251,9 @@ class SingerConductor(BaseConductor):
         if self.state_persistence_filepath:
             state_storage = state.SmartStorage(self.state_persistence_filepath)
             previous_state = state_storage.load()
+
+            LOGGER.info(
+                f'Obtaining previous state from storage: {previous_state}')
             state_storage.dump(file_contents=previous_state,
                                filepath=self.local_previous_state_filepath)
 
@@ -264,7 +267,9 @@ class SingerConductor(BaseConductor):
             state_storage = state.SmartStorage(
                 self.local_latest_state_filepath)
             latest_state = state_storage.load()
-            LOGGER.info(f'Latest state: {latest_state}')
+
+            LOGGER.info(
+                f'Updating state storage with latest state: {latest_state}')
             state_storage.update(file_contents=latest_state,
                                  filepath=self.state_persistence_filepath)
 
