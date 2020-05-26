@@ -1,10 +1,9 @@
 {
     "tap_bin": "~/.virtualenvs/venv_tap/bin/tap-postgres",
     "tap_config_filepath": "tap/config.json",
-    "tap_catalog_filepath": "raw_catalog.json",
+    "tap_catalog_filepath": "catalog.json",
     "selector_bin": "~/.virtualenvs/venv_selector/bin/selector-postgresql",
     "selector_config_filepath": "selector/config.json",
-    "selector_catalog_filepath": "edited_catalog.json",
     "transformer_bin": "~/.virtualenvs/venv_transformer/bin/transform-field",
     "transformer_config_filepath": "transformer/config.json",
     "target_bin": "~/.virtualenvs/venv_target/bin/target-bigquery",

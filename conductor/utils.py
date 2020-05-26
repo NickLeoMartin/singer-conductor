@@ -9,6 +9,17 @@ logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 
+def write_json_to_new_file(previous_filepath, new_filepath):
+    """
+    Move JSON file to new JSON file.
+    """
+    with open(previous_filepath) as file:
+        json_contents = json.load(file)
+
+    with open(new_filepath, 'w') as file:
+        json.dump(json_contents, file)
+
+
 def is_json_file(filepath):
     """
     Detects if a string is a valid json or not

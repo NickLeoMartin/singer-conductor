@@ -7,10 +7,9 @@ TEST_CONFIG = 'tests/test_config.json'
 
 tap_bin = "~/.virtualenvs/venv_tap/bin/tap-postgres"
 tap_config_filepath = "tap/config.json"
-tap_catalog_filepath = "raw_catalog.json"
+tap_catalog_filepath = "catalog.json"
 selector_bin = "~/.virtualenvs/venv_selector/bin/selector-postgresql"
 selector_config_filepath = "selector/config.json"
-selector_catalog_filepath = "edited_catalog.json"
 transformer_bin = "~/.virtualenvs/venv_transformer/bin/transform-field"
 transformer_config_filepath = "transformer/config.json"
 target_bin = "~/.virtualenvs/venv_target/bin/target-bigquery"
@@ -46,10 +45,6 @@ class TestSingerConductor(unittest.TestCase):
         self.assertEqual(
             conductor.selector_config_filepath,
             selector_config_filepath)
-
-        self.assertEqual(
-            conductor.selector_catalog_filepath,
-            selector_catalog_filepath)
 
         self.assertEqual(
             conductor.transformer_bin,
@@ -88,7 +83,7 @@ class TestSingerConductor(unittest.TestCase):
     def test_tap_discovery_command(self):
         expected_command = (
             '~/.virtualenvs/venv_tap/bin/tap-postgres '
-            '--config tap/config.json --discover > raw_catalog.json')
+            '--config tap/config.json --discover > temp_catalog.json')
 
         self.assertEqual(
             self.conductor.tap_discovery_command,
@@ -98,7 +93,7 @@ class TestSingerConductor(unittest.TestCase):
         expected_command = (
             '~/.virtualenvs/venv_selector/bin/selector-postgresql '
             '--config selector/config.json '
-            '--catalog raw_catalog.json > edited_catalog.json')
+            '--catalog catalog.json > temp_catalog.json')
 
         self.assertEqual(
             self.conductor.tap_selector_command,
@@ -107,7 +102,7 @@ class TestSingerConductor(unittest.TestCase):
     def test_tap_replication_command(self):
         expected_command = (
             '~/.virtualenvs/venv_tap/bin/tap-postgres '
-            '--config tap/config.json --catalog edited_catalog.json '
+            '--config tap/config.json --catalog catalog.json '
             '--state previous_state.json')
 
         self.assertEqual(
@@ -126,7 +121,7 @@ class TestSingerConductor(unittest.TestCase):
     def test_replication_command(self):
         expected_command = (
             '  ~/.virtualenvs/venv_tap/bin/tap-postgres '
-            '--config tap/config.json --catalog edited_catalog.json '
+            '--config tap/config.json --catalog catalog.json '
             '--state previous_state.json '
             '| ~/.virtualenvs/venv_transformer/bin/transform-field '
             '--config transformer/config.json '

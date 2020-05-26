@@ -24,20 +24,19 @@ class BaseConductor(object):
                  target_config_filepath,
                  selector_bin=None,
                  selector_config_filepath=None,
-                 selector_catalog_filepath=None,
                  transformer_bin=None,
                  transformer_config_filepath=None,
                  state_persistence_filepath=None,
                  use_previous_state=True,
                  store_latest_state=True,
                  local_previous_state_filepath='previous_state.json',
-                 local_latest_state_filepath='latest_state.json'):
+                 local_latest_state_filepath='latest_state.json',
+                 temporary_catalog_filepath='temp_catalog.json'):
         self.tap_bin = tap_bin
         self.tap_config_filepath = tap_config_filepath
         self.tap_catalog_filepath = tap_catalog_filepath
         self.selector_bin = selector_bin
         self.selector_config_filepath = selector_config_filepath
-        self.selector_catalog_filepath = selector_catalog_filepath
         self.transformer_bin = transformer_bin
         self.transformer_config_filepath = transformer_config_filepath
         self.target_bin = target_bin
@@ -47,6 +46,7 @@ class BaseConductor(object):
         self.store_latest_state = store_latest_state
         self.local_previous_state_filepath = local_previous_state_filepath
         self.local_latest_state_filepath = local_latest_state_filepath
+        self.temporary_catalog_filepath = temporary_catalog_filepath
 
     @classmethod
     def load(cls, filepath):
@@ -151,7 +151,7 @@ class SingerConductor(BaseConductor):
             f'{self.tap_bin}',
             f'--config {self.tap_config_filepath}',
             '--discover',
-            f'> {self.tap_catalog_filepath}'
+            f'> {self.temporary_catalog_filepath}'
         ])
 
     @property
@@ -161,22 +161,18 @@ class SingerConductor(BaseConductor):
             f'{self.selector_bin}',
             f'--config {self.selector_config_filepath}',
             f'--catalog {self.tap_catalog_filepath}',
-            f'> {self.selector_catalog_filepath}'
+            f'> {self.temporary_catalog_filepath}'
         ])
 
     @property
     def tap_replication_command(self):
         """Piecewise command for data extraction"""
-        catalog = self.tap_catalog_filepath
-
-        if self.selector_catalog_filepath:
-            catalog = self.selector_catalog_filepath
 
         # Required
         commands = [
             f'{self.tap_bin}',
             f'--config {self.tap_config_filepath}',
-            f'--catalog {catalog}'
+            f'--catalog {self.tap_catalog_filepath}'
         ]
 
         # Optional
@@ -186,6 +182,7 @@ class SingerConductor(BaseConductor):
 
         return ' '.join(commands)
 
+    # Assumes transformer is between tap & target
     @property
     def transformer_replication_command(self):
         """Piecewise command for field transformation"""
@@ -235,6 +232,10 @@ class SingerConductor(BaseConductor):
         _, _, stderr = utils.run_command(
             command=self.tap_discovery_command)
 
+        utils.write_json_to_new_file(
+            previous_filepath=self.temporary_catalog_filepath,
+            new_filepath=self.tap_catalog_filepath)
+
         LOGGER.info('Completed discovery')
 
     def select(self):
@@ -244,6 +245,10 @@ class SingerConductor(BaseConductor):
         LOGGER.info(f'Executing: {self.tap_selector_command}')
         _, _, stderr = utils.run_command(
             command=self.tap_selector_command)
+
+        utils.write_json_to_new_file(
+            previous_filepath=self.temporary_catalog_filepath,
+            new_filepath=self.tap_catalog_filepath)
 
         LOGGER.info('Completed selection')
 
