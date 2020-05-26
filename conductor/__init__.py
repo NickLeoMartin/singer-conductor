@@ -35,7 +35,7 @@ def main():
 
     at_least_one_required_args = [args.discover, args.select, args.replicate]
 
-    if all(arg is not False for arg in at_least_one_required_args):
+    if all(arg is False for arg in at_least_one_required_args):
         error_message = (
             'At least one of arg must be specified: '
             '--discover, --select or --replicate'
