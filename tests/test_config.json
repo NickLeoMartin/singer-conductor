@@ -10,5 +10,6 @@
     "target_config_filepath": "target/config.json",
     "state_persistence_filepath": "state.json",
     "use_previous_state": true,
-    "store_latest_state": true
+    "store_latest_state": true,
+    "use_properties_flag_for_tap": false
 }

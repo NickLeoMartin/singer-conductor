@@ -29,6 +29,7 @@ class BaseConductor(object):
                  state_persistence_filepath=None,
                  use_previous_state=True,
                  store_latest_state=True,
+                 use_properties_flag_for_tap=False,
                  local_previous_state_filepath='previous_state.json',
                  local_latest_state_filepath='latest_state.json',
                  temporary_catalog_filepath='temp_catalog.json'):
@@ -44,6 +45,7 @@ class BaseConductor(object):
         self.state_persistence_filepath = state_persistence_filepath
         self.use_previous_state = use_previous_state
         self.store_latest_state = store_latest_state
+        self.use_properties_flag_for_tap = use_properties_flag_for_tap
         self.local_previous_state_filepath = local_previous_state_filepath
         self.local_latest_state_filepath = local_latest_state_filepath
         self.temporary_catalog_filepath = temporary_catalog_filepath
@@ -168,11 +170,16 @@ class SingerConductor(BaseConductor):
     def tap_replication_command(self):
         """Piecewise command for data extraction"""
 
+        # Older taps use the deprecated 'properties' flag
+        catalog_flag = 'catalog'
+        if self.use_properties_flag_for_tap:
+            catalog_flag = 'properties'
+
         # Required
         commands = [
             f'{self.tap_bin}',
             f'--config {self.tap_config_filepath}',
-            f'--catalog {self.tap_catalog_filepath}'
+            f'--{catalog_flag} {self.tap_catalog_filepath}'
         ]
 
         # Optional

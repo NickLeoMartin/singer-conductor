@@ -109,6 +109,18 @@ class TestSingerConductor(unittest.TestCase):
             self.conductor.tap_replication_command,
             expected_command)
 
+    def test_tap_replication_command_use_properties_flag(self):
+        expected_command = (
+            '~/.virtualenvs/venv_tap/bin/tap-postgres '
+            '--config tap/config.json --properties catalog.json '
+            '--state previous_state.json')
+
+        self.conductor.use_properties_flag_for_tap = True
+
+        self.assertEqual(
+            self.conductor.tap_replication_command,
+            expected_command)
+
     def test_transformer_replication_command(self):
         expected_command = (
             '~/.virtualenvs/venv_transformer/bin/transform-field '
