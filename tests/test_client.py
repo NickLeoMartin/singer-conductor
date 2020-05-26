@@ -97,7 +97,7 @@ class TestSingerConductor(unittest.TestCase):
     def test_tap_selector_command(self):
         expected_command = (
             '~/.virtualenvs/venv_selector/bin/selector-postgresql '
-            '--selector selector/config.json '
+            '--config selector/config.json '
             '--catalog raw_catalog.json > edited_catalog.json')
 
         self.assertEqual(

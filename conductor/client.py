@@ -159,7 +159,7 @@ class SingerConductor(BaseConductor):
         """Full command to run stream & field selector post-discovery mode"""
         return ' '.join([
             f'{self.selector_bin}',
-            f'--selector {self.selector_config_filepath}',
+            f'--config {self.selector_config_filepath}',
             f'--catalog {self.tap_catalog_filepath}',
             f'> {self.selector_catalog_filepath}'
         ])
