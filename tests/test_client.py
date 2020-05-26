@@ -5,8 +5,7 @@ from conductor.client import SingerConductor
 
 TEST_CONFIG = 'tests/test_config.json'
 
-
-tap_bin = "~/.virtualenvs/venv_tap/bin/tap-postgres",
+tap_bin = "~/.virtualenvs/venv_tap/bin/tap-postgres"
 tap_config_filepath = "tap/config.json"
 tap_catalog_filepath = "raw_catalog.json"
 selector_bin = "~/.virtualenvs/venv_selector/bin/selector-postgresql"
@@ -17,6 +16,8 @@ transformer_config_filepath = "transformer/config.json"
 target_bin = "~/.virtualenvs/venv_target/bin/target-bigquery"
 target_config_filepath = "target/config.json"
 state_persistence_filepath = "state.json"
+use_previous_state = True
+store_latest_state = True
 
 
 class TestSingerConductor(unittest.TestCase):
@@ -28,58 +29,55 @@ class TestSingerConductor(unittest.TestCase):
         conductor = self.conductor
 
         # Check attributes
-        tap_bin = "~/.virtualenvs/venv_tap/bin/tap-postgres"
         self.assertEqual(conductor.tap_bin, tap_bin)
 
-        tap_config_filepath = "tap/config.json"
         self.assertEqual(
             conductor.tap_config_filepath,
             tap_config_filepath)
 
-        tap_catalog_filepath = "raw_catalog.json"
         self.assertEqual(
             conductor.tap_catalog_filepath,
             tap_catalog_filepath)
 
-        selector_bin = "~/.virtualenvs/venv_selector/bin/selector-postgresql"
         self.assertEqual(
             conductor.selector_bin,
             selector_bin)
 
-        selector_config_filepath = "selector/config.json"
         self.assertEqual(
             conductor.selector_config_filepath,
             selector_config_filepath)
 
-        selector_catalog_filepath = "edited_catalog.json"
         self.assertEqual(
             conductor.selector_catalog_filepath,
             selector_catalog_filepath)
 
-        transformer_bin = "~/.virtualenvs/venv_transformer/bin/transform-field"
         self.assertEqual(
             conductor.transformer_bin,
             transformer_bin)
 
-        transformer_config_filepath = "transformer/config.json"
         self.assertEqual(
             conductor.transformer_config_filepath,
             transformer_config_filepath)
 
-        target_bin = "~/.virtualenvs/venv_target/bin/target-bigquery"
         self.assertEqual(
             conductor.target_bin,
             target_bin)
 
-        target_config_filepath = "target/config.json"
         self.assertEqual(
             conductor.target_config_filepath,
             target_config_filepath)
 
-        state_persistence_filepath = "state.json"
         self.assertEqual(
             conductor.state_persistence_filepath,
             state_persistence_filepath)
+
+        self.assertEqual(
+            conductor.use_previous_state,
+            use_previous_state)
+
+        self.assertEqual(
+            conductor.store_latest_state,
+            store_latest_state)
 
     def test_validate_configs(self):
         pass

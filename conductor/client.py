@@ -28,6 +28,8 @@ class BaseConductor(object):
                  transformer_bin=None,
                  transformer_config_filepath=None,
                  state_persistence_filepath=None,
+                 use_previous_state=True,
+                 store_latest_state=True,
                  local_previous_state_filepath='previous_state.json',
                  local_latest_state_filepath='latest_state.json'):
         self.tap_bin = tap_bin
@@ -41,6 +43,8 @@ class BaseConductor(object):
         self.target_bin = target_bin
         self.target_config_filepath = target_config_filepath
         self.state_persistence_filepath = state_persistence_filepath
+        self.use_previous_state = use_previous_state
+        self.store_latest_state = store_latest_state
         self.local_previous_state_filepath = local_previous_state_filepath
         self.local_latest_state_filepath = local_latest_state_filepath
 
@@ -176,7 +180,7 @@ class SingerConductor(BaseConductor):
         ]
 
         # Optional
-        if self.state_persistence_filepath:
+        if self.use_previous_state:
             state_arg = f'--state {self.local_previous_state_filepath}'
             commands.append(state_arg)
 
@@ -217,7 +221,7 @@ class SingerConductor(BaseConductor):
         commands.append(target_command)
 
         # Optional
-        if self.state_persistence_filepath:
+        if self.store_latest_state:
             state_command = f'> {self.local_latest_state_filepath}'
             commands.append(state_command)
 
@@ -248,7 +252,7 @@ class SingerConductor(BaseConductor):
         LOGGER.info('Replicating...')
 
         # Load local or external state file
-        if self.state_persistence_filepath:
+        if self.use_previous_state:
             state_storage = state.SmartStorage(self.state_persistence_filepath)
             previous_state = state_storage.load()
 
@@ -263,7 +267,7 @@ class SingerConductor(BaseConductor):
             command=self.replication_command)
 
         # Persist local or external state file
-        if self.state_persistence_filepath:
+        if self.store_latest_state:
             state_storage = state.SmartStorage(
                 self.local_latest_state_filepath)
             latest_state = state_storage.load()

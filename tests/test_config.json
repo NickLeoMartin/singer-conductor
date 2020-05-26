@@ -9,5 +9,7 @@
     "transformer_config_filepath": "transformer/config.json",
     "target_bin": "~/.virtualenvs/venv_target/bin/target-bigquery",
     "target_config_filepath": "target/config.json",
-    "state_persistence_filepath": "state.json"
+    "state_persistence_filepath": "state.json",
+    "use_previous_state": true,
+    "store_latest_state": true
 }
