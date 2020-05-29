@@ -1,3 +1,4 @@
+import os
 import logging
 import shlex
 import json
@@ -13,8 +14,12 @@ def write_json_to_new_file(previous_filepath, new_filepath):
     """
     Move JSON file to new JSON file.
     """
+    previous_filepath = os.path.expanduser(previous_filepath)
+
     with open(previous_filepath) as file:
         json_contents = json.load(file)
+
+    new_filepath = os.path.expanduser(new_filepath)
 
     with open(new_filepath, 'w') as file:
         json.dump(json_contents, file)

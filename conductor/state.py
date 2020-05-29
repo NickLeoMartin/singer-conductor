@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 
@@ -39,15 +40,19 @@ class SmartStorage(BaseStorage):
 
     def load(self):
         self.file_contents = {}
+
+        filepath = os.path.expanduser(self.filepath)
+
         try:
-            with open(self.filepath, 'r') as file:
+            with open(filepath, 'r') as file:
                 self.file_contents = json.load(file)
         except FileNotFoundError:
-            LOGGER.info(f'File does not exist: {self.filepath}')
+            LOGGER.info(f'File does not exist: {filepath}')
         return self.file_contents
 
     def dump(self, file_contents, filepath=None):
         filepath = self.filepath if filepath is None else filepath
+        filepath = os.path.expanduser(filepath)
 
         with open(filepath, 'w') as file:
             json.dump(file_contents, file)

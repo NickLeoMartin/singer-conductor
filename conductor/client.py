@@ -8,7 +8,6 @@ import logging
 from conductor import utils
 from conductor import state
 
-HOME_ADDRESS = os.path.expanduser('~')
 
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
@@ -71,7 +70,7 @@ class BaseConductor(object):
         for filepath in filepaths:
 
             # Replace tilde with full home path
-            filepath = filepath.replace('~', HOME_ADDRESS)
+            filepath = os.path.expanduser(filepath)
 
             # Load/download to validate
             config = state.SmartStorage(filepath).load()
@@ -99,7 +98,7 @@ class BaseConductor(object):
         for filepath in filepaths:
 
             # Replace tilde with full home path
-            filepath = filepath.replace('~', HOME_ADDRESS)
+            filepath = os.path.expanduser(filepath)
 
             # Check is environment exists at path
             if not os.path.isfile(filepath):
